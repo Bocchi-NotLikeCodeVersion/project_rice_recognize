@@ -1,0 +1,1 @@
+# project_rice_recognize
