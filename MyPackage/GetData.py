@@ -35,7 +35,7 @@ class GetRiceData():
         # 创建数据加载器
         data_loader = DataLoader(data_train, batch_size=batch_size, shuffle=True)  # 设置批量大小和是否打乱数据
         return data_loader
-    def get_val_batch(self, batch_size=1):
+    def get_val_batch(self, batch_size=32):
         if not self.path_val:
             raise ValueError("No validation data path.")
         # 初始化ImageFolder类，用于加载验证数据集

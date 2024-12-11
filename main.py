@@ -43,7 +43,7 @@ def evaluate():
     data_lodar=data_obj.get_val_batch() 
     model_obj=CustomVGG11()
     model=model_obj.get_common_custom_vgg11()
-    model.load_state_dict(torch.load(model_path_last,weights_only=True))
+    model.load_state_dict(torch.load(r"assets\pth\vgg11-last-20241211102215.pth",weights_only=True))
     score_value=score(model,data_lodar)
     print(score_value)
 if __name__=="__main__":
