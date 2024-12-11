@@ -1,7 +1,9 @@
 import torch
 import wandb
+import time
 import torch.optim as optim
 import torch.nn as nn
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def init_wandb(lr,epoch):
     wandb.init(
         # set the wandb project where this run will be logged
@@ -17,8 +19,10 @@ def init_wandb(lr,epoch):
     )
 
 class Train():
-    def __init__(self,model,optimizer=None):
-        self.model = model
+    def __init__(self,model,optimizer=None,state_dict_path=None):
+        if state_dict_path is not None:
+            model.load_state_dict(torch.load(state_dict_path,weights_only=True))
+        self.model = model.to(device)
         if optimizer is None:
             self.optimizer = self.init_optimizer()
         else:
@@ -28,14 +32,20 @@ class Train():
         if visualization:
             init_wandb(lr=self.optimizer.param_groups[0]['lr'],epoch=epoch)
             for i in range(epoch):
+                start_time = time.time()
                 for inputs, labels in data_loader:
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
                     outputs = self.model(inputs)
                     loss = self.loss_fn(outputs,labels)
                     self.optimizer.zero_grad()
                     loss.backward()
                     self.optimizer.step()
-                    y_pred = torch.argmax(outputs, dim=1)
-                    wandb.log({'loss': loss,'accuracy': (y_pred == labels).sum().item() / len(labels)})
+                    if i % 5 == 0:
+                        y_pred = torch.argmax(outputs, dim=1)
+                        wandb.log({'loss': loss,'accuracy': (y_pred == labels).sum().item() / len(labels)})
+                end_time = time.time()
+                print(f"epoch {i}: time:{end_time - start_time} loss:{loss:.4f}")
             wandb.watch(self.model, log="all", log_graph=True)
             wandb.finish()
                     
@@ -43,6 +53,8 @@ class Train():
         
         for i in range(epoch):
             for inputs, labels in data_loader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
                 outputs = self.model(inputs)
                 loss = self.loss_fn(outputs,labels)
                 self.optimizer.zero_grad()
@@ -51,7 +63,7 @@ class Train():
         print("Training Finished!")
         return self.model
     
-    def init_optimizer(self,lr=1e-3):
+    def init_optimizer(self,lr=1e-5):
        optimizer=optim.Adam(self.model.parameters(), lr=lr)
        return optimizer
     def init_loss(self):

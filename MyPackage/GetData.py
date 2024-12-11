@@ -31,7 +31,7 @@ class GetRiceData():
             # 将图像转换为Tensor格式
             transforms.ToTensor()
             ]))
-        print(data_train.classes)
+        # print(data_train.classes)
         # 创建数据加载器
         data_loader = DataLoader(data_train, batch_size=batch_size, shuffle=True)  # 设置批量大小和是否打乱数据
         return data_loader
