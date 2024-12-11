@@ -44,6 +44,7 @@ class GetRiceData():
             root=self.path_val,
             # 设置数据转换流程
             transform=transforms.Compose([
+                transforms.Resize((128, 128)),
                 # 将图像转换为灰度图
                 transforms.Grayscale(num_output_channels=1),
                 # 对图像进行随机亮度、对比度、饱和度和色调调整

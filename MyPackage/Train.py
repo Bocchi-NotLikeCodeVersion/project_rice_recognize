@@ -3,7 +3,9 @@ import wandb
 import time
 import torch.optim as optim
 import torch.nn as nn
+from torch.utils.tensorboard import SummaryWriter
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+writer=SummaryWriter()
 def init_wandb(lr,epoch):
     wandb.init(
         # set the wandb project where this run will be logged
@@ -44,13 +46,21 @@ class Train():
                     if i % 5 == 0:
                         y_pred = torch.argmax(outputs, dim=1)
                         wandb.log({'loss': loss,'accuracy': (y_pred == labels).sum().item() / len(labels)})
+                        writer.add_scalar("loss", loss)
+                        for x in inputs:
+                            writer.add_images('input',x.unsqueeze(dim=0), i)
+                    
                 end_time = time.time()
                 print(f"epoch {i}: time:{end_time - start_time} loss:{loss:.4f}")
+
+            writer.add_graph(self.model, torch.rand(1,1,128,128).to(device))
+            writer.close()
             wandb.watch(self.model, log="all", log_graph=True)
             wandb.finish()
                     
             return self.model
         
+
         for i in range(epoch):
             for inputs, labels in data_loader:
                 inputs = inputs.to(device)

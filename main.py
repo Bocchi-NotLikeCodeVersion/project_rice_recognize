@@ -17,7 +17,7 @@ val_path=os.path.relpath(val_path)
 model_path=os.path.join(path1,"assets/pth/resnet34-b627a593.pth")
 model_path=os.path.relpath(model_path)
 
-model_path2=os.path.join(path1,"assets/pth/resnet34-last-20241211145447.pth")
+model_path2=os.path.join(path1,"assets/pth/resnet34-last-20241211155150.pth")
 model_path2=os.path.relpath(model_path2)
 
 now_time=time.strftime(r"%Y%m%d%H%M%S",time.localtime())

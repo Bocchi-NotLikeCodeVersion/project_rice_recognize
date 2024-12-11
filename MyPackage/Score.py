@@ -12,6 +12,6 @@ def score(model,data_loader):
         y_pred = torch.argmax(outputs, dim=1)
         score_value+=(y_pred == labels).sum().item() / len(labels)
         epoch+=1
-        print(epoch)
+        # print(epoch)
     return score_value/epoch
     
