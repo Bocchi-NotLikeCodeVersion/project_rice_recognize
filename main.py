@@ -7,6 +7,7 @@ from MyPackage.GetData import GetRiceData
 from MyPackage.Train import Train
 from MyPackage.Predict import predict
 from MyPackage.Score import score
+from MyPackage.ONNX_control import OnnxControls
 from torchvision import transforms
 path1=os.path.dirname(__file__)
 train_path=os.path.join(path1,"assets/rice/train")
@@ -20,9 +21,14 @@ model_path=os.path.relpath(model_path)
 model_path2=os.path.join(path1,"assets/pth/resnet34-last-20241211155150.pth")
 model_path2=os.path.relpath(model_path2)
 
+onnx_path=os.path.join(path1,"assets/pth/resnet34-last-20241211155150.pth.onnx")
+onnx_path=os.path.relpath(onnx_path)
+
 now_time=time.strftime(r"%Y%m%d%H%M%S",time.localtime())
 model_path_last=os.path.join(path1,f"assets/pth/resnet34-last-{now_time}.pth")
 model_path_last=os.path.relpath(model_path_last)
+
+
 
 def train_and_save_model(batch_size=16,epoch=1):
     data_obj=GetRiceData(path_train=train_path)
@@ -49,8 +55,17 @@ def evaluate():
     model.load_state_dict(torch.load(model_path2,weights_only=True))
     score_value=score(model,data_lodar,visualization=True)
     print(score_value)
+def create_onnx():
+    model_obj=CustomResnet34()
+    model=model_obj.get_common_custom_resnet34()
+    model.load_state_dict(torch.load(model_path2,weights_only=True,map_location="cpu"))
+    onnx_obj=OnnxControls(model,torch.rand(1,1,128,128),onnx_path)
+    # onnx_obj.save_onnx()
+    res=onnx_obj.onnx_pre(r"assets\rice\val\Jasmine\Jasmine (10000).jpg")
+    print(res)
 if __name__=="__main__":
     # train_and_save_model(32,100)
     # inference(r"assets\rice\val\Jasmine\Jasmine (1).jpg")
-    evaluate()
+    # evaluate()
+    create_onnx()
     pass
