@@ -47,7 +47,7 @@ def evaluate():
     model_obj=CustomResnet34()
     model=model_obj.get_common_custom_resnet34()
     model.load_state_dict(torch.load(model_path2,weights_only=True))
-    score_value=score(model,data_lodar)
+    score_value=score(model,data_lodar,visualization=True)
     print(score_value)
 if __name__=="__main__":
     # train_and_save_model(32,100)
